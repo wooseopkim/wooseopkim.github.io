@@ -2,6 +2,7 @@
 import { emoji } from '@lib/svg';
 import $favicon from '@store/$favicon';
 import $title from '@store/$title';
+import '@fontsource/ibm-plex-mono';
 ---
 
 <script>
@@ -38,9 +39,9 @@ import $title from '@store/$title';
     <slot />
   </body>
 </html>
+
 <style>
   @import 'modern-normalize';
-  @import '@fontsource/ibm-plex-mono';
 
   * {
     font-family: 'IBM Plex Mono', 'Courier New', monospace;

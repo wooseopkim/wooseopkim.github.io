@@ -1,5 +1,7 @@
 // @ts-check
 
+/* eslint-env node */
+
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
   extends: [
@@ -14,7 +16,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: true,
+    project: ['tsconfig.json', './tsconfig.eslint.json'],
     tsconfigRootDir: __dirname,
   },
   overrides: [
