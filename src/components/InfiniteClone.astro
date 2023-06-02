@@ -1,0 +1,74 @@
+<script>
+  import zalgo from '@lib/zalgo';
+  import $sanity from '@store/$sanity';
+
+  class InfiniteClone extends HTMLElement {
+    constructor() {
+      super();
+
+      const target = this.firstElementChild as HTMLElement;
+
+      target.dataset['source'] =
+        target.dataset['source'] ??
+        target
+          .querySelector('.content')!
+          .textContent!.replace(/\s+/gm, ' ')
+          .trim();
+      const source = target.dataset['source'];
+      detectIntersections(this, source);
+    }
+  }
+
+  function detectIntersections(target: HTMLElement, content: string) {
+    const start = Date.now();
+    const observer = new IntersectionObserver((intersections, observer) => {
+      const { isIntersecting = false } =
+        intersections.find(({ isIntersecting }) => isIntersecting) ?? {};
+      if (!isIntersecting) {
+        return;
+      }
+      const depth = parseInt(target.dataset['depth'] ?? '0', 10);
+
+      mutateContent(target, content);
+      goInsane(depth, start);
+      appendClone(target, depth);
+
+      observer.unobserve(target);
+    });
+    observer.observe(target);
+  }
+
+  function mutateContent(target: HTMLElement, content: string) {
+    const intensity = Math.abs($sanity.value - 100) / 10;
+    const wrapper = (x: string) =>
+      x.length > 0 ? `<span class="zalgo">${x}</span>` : '';
+    const textContent = zalgo(content, intensity, wrapper);
+    target.querySelector('.content')!.innerHTML = textContent;
+  }
+
+  function appendClone(target: HTMLElement, depth: number) {
+    const clone = target.cloneNode(true) as typeof target;
+    clone.dataset['depth'] = (depth + 1).toString();
+    const parent = target.parentElement!;
+    parent.insertBefore(clone, parent.lastElementChild);
+  }
+
+  function goInsane(depth: number, start: number) {
+    const diff = Math.min(Math.max(0, (Date.now() - start) / 200), 1);
+    $sanity.update((value) => {
+      return value - Math.random() * ((depth * diff) / 100);
+    });
+  }
+
+  customElements.define('infinite-clone', InfiniteClone);
+</script>
+
+<infinite-clone>
+  <slot class="target" />
+</infinite-clone>
+
+<style>
+  infinite-clone :global(.zalgo) {
+    font-family: sans-serif;
+  }
+</style>

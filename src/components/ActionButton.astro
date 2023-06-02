@@ -1,0 +1,118 @@
+---
+import type { Action } from '@lib/Action';
+
+interface Props {
+  label: string;
+  actions: Action;
+}
+
+const { label, actions } = Astro.props;
+
+const href = actions.opens;
+const target = href?.match(/^https?:\/\//) ? '_blank' : undefined;
+
+const value = actions.contains;
+---
+
+<script>
+  class ActionButton extends HTMLElement {
+    constructor() {
+      super();
+
+      const a = this.querySelector('a')!;
+      a.addEventListener('click', onClick);
+
+      const input = this.querySelector('input');
+      input?.addEventListener('focus', () => selectElement(input));
+
+      const button = this.querySelector('button');
+      button?.addEventListener('click', () =>
+        copyToClipboard(button.dataset['copy'])
+      );
+    }
+  }
+
+  function onClick(e: MouseEvent) {
+    openLink(e);
+    selectNextElement(e);
+  }
+
+  function openLink(e: MouseEvent) {
+    const { href, target } = e.currentTarget as HTMLAnchorElement;
+    const { host, protocol } = new URL(href);
+
+    if (!protocol.match(/^https?:/)) {
+      return;
+    }
+
+    e.preventDefault();
+    const features = host === window.location.host ? '' : 'noreferrer';
+    window.open(href, target, features);
+  }
+
+  function selectNextElement(e: MouseEvent) {
+    const { nextElementSibling } = e.currentTarget as HTMLAnchorElement;
+
+    if (!(nextElementSibling instanceof HTMLElement)) {
+      return;
+    }
+
+    selectElement(nextElementSibling);
+  }
+
+  function selectElement(target: HTMLElement) {
+    const selection = window.getSelection();
+    if (selection === null) {
+      return;
+    }
+    const range = document.createRange();
+    range.selectNode(target);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  function copyToClipboard(value: string | undefined) {
+    if (value === undefined || value === '') {
+      return;
+    }
+    navigator.clipboard.writeText(value);
+  }
+
+  customElements.define('action-button', ActionButton);
+</script>
+
+<action-button>
+  <p>
+    <a {href} {target} referrerpolicy="same-origin">{label}</a>
+    {
+      value !== undefined && (
+        <>
+          <input readonly {value} style={`width: ${value.length + 1}ch`} />
+          <button data-copy={value}>Copy</button>
+        </>
+      )
+    }
+  </p>
+</action-button>
+
+<style>
+  action-button {
+    container-type: inline-size;
+    display: inline-block;
+    width: 100%;
+  }
+
+  p {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100cqi;
+    margin-block: 0.6rem;
+  }
+
+  input {
+    flex-shrink: 1;
+    flex-grow: 1;
+    text-overflow: ellipsis;
+  }
+</style>

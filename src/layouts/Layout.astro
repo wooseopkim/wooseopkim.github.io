@@ -1,36 +1,53 @@
 ---
-export interface Props {
-	title: string;
-}
-
-const { title } = Astro.props;
+import { emoji } from '@lib/svg';
+import $favicon from '@store/$favicon';
+import $title from '@store/$title';
 ---
 
-<!DOCTYPE html>
+<script>
+  import posthog from 'posthog-js';
+  import { emoji } from '@lib/svg';
+  import $favicon from '@store/$favicon';
+  import $title from '@store/$title';
+
+  posthog.init('phc_j0xjXbiokyQ8kfJ9kLXN6zryPicsZ0HCAaJ4dRwOPPy', {
+    api_host: 'https://app.posthog.com',
+    persistence: 'memory',
+  });
+
+  const elem = document.querySelector('title')!;
+  $title.subscribe((x) => {
+    elem.textContent = x;
+  });
+
+  const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')!;
+  $favicon.subscribe((x) => {
+    icon.href = emoji(x);
+  });
+</script>
+
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description">
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{$title.value}</title>
+    <link rel="icon" href={emoji($favicon.value)} />
+  </head>
+  <body>
+    <slot />
+  </body>
 </html>
-<style is:global>
-	:root {
-		--accent: 124, 58, 237;
-		--accent-gradient: linear-gradient(45deg, rgb(var(--accent)), #da62c4 30%, white 60%);
-	}
-	html {
-		font-family: system-ui, sans-serif;
-		background-color: #F6F6F6;
-	}
-	code {
-		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-			Bitstream Vera Sans Mono, Courier New, monospace;
-	}
+<style>
+  @import 'modern-normalize';
+  @import '@fontsource/ibm-plex-mono';
+
+  * {
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+
+  html,
+  body {
+    width: 100%;
+  }
 </style>
