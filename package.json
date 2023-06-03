@@ -13,8 +13,8 @@
     "check": "astro check && tsc --noEmit",
     "check:ts": "astro check",
     "check:astro": "astro check",
-    "lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "format": "prettier --plugin-search-dir . --write . && eslint . --fix"
+    "lint": "prettier --check . && eslint .",
+    "format": "prettier --write . && eslint . --fix"
   },
   "dependencies": {
     "astro": "^2.4.1",
