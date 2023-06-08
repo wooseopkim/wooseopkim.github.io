@@ -83,15 +83,22 @@ const value = actions.contains;
 
 <action-button>
   <p>
-    <a {href} {target} referrerpolicy="same-origin">{label}</a>
-    {
-      value !== undefined && (
-        <>
-          <input readonly {value} style={`width: ${value.length + 1}ch`} />
-          <button data-copy={value}>Copy</button>
-        </>
-      )
-    }
+    <label>
+      <a {href} {target} referrerpolicy="same-origin">{label}</a>
+      {
+        value !== undefined && (
+          <>
+            <input
+              readonly
+              {value}
+              style={`width: ${value.length + 1}ch`}
+              aria-label={label}
+            />
+            <button data-copy={value}>Copy</button>
+          </>
+        )
+      }
+    </label>
   </p>
 </action-button>
 
