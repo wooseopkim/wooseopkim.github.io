@@ -10,8 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "astro check && tsc --noEmit",
-    "check:ts": "tsc --noEmit",
+    "check": "astro check && prettier --check . && eslint .",
     "check:astro": "astro check",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write . && eslint . --fix"
@@ -43,11 +42,8 @@
     "**/*.astro": [
       "npm run check:astro"
     ],
-    "**/*.{js,jsx,ts,tsx}": [
-      "npm run check:ts"
-    ],
     "**/*.{js,jsx,ts,tsx,astro}": [
-      "npm run format"
+      "npm run lint"
     ]
   }
 }
