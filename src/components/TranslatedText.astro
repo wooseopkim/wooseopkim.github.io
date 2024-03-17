@@ -1,0 +1,20 @@
+---
+import t, { type LocaleName } from '@lib/i18n';
+import type { Text } from '@lib/i18n/Text';
+
+interface Props {
+  of: keyof Text;
+  locale: LocaleName;
+}
+
+const { of: key, locale } = Astro.props;
+
+const s = t(key, locale);
+
+const slotName = 'default';
+const { slots } = Astro;
+const html = slots.has(slotName) ? await slots.render(slotName, [s]) : s;
+---
+
+<!-- using `Fragment` raises `@typescript-eslint/no-unsafe-assignment` --><!-- but disabling it locally won't work, so just use `span` instead -->
+<span set:html={html} />

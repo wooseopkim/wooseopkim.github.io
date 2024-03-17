@@ -1,200 +1,24 @@
 ---
-import { composite } from '@lib/Action';
-import ActionButton from '@components/ActionButton.astro';
-import ActionSection from '@components/ActionSection.astro';
-import SourcedQuote from '@components/SourcedQuote.astro';
-import Layout from '@layouts/Layout.astro';
-import $message from '@store/$message';
-import InfiniteClone from '@components/InfiniteClone.astro';
+import { defaultLocale } from '@lib/i18n';
 ---
 
+<noscript>
+  <meta http-equiv="refresh" content={`0; url=./${defaultLocale}`} />
+</noscript>
+
 <script>
-  import $interactions from '@store/$interactions';
-  import $message from '@store/$message';
+  import { defaultLocale, localeNames, type LocaleName } from '@lib/i18n';
 
-  const message = document.getElementById('message')!;
+  const { language } = navigator;
 
-  const interactive = document.querySelectorAll('action-button');
-  interactive.forEach((button) => {
-    button.querySelectorAll('a, input, button').forEach((action) => {
-      action.addEventListener('click', () => {
-        $interactions.update((value) => value.add(button));
-      });
-    });
-  });
+  function matchLanguage(language: string) {
+    if (localeNames.has(language as LocaleName)) {
+      return language;
+    }
+    return defaultLocale;
+  }
 
-  $message.subscribe((value) => {
-    message.textContent = value.call(undefined, interactive.length);
-  });
+  const locale = matchLanguage(language);
+
+  location.href = `./${locale}`;
 </script>
-
-<Layout>
-  <div class="container">
-    <main>
-      <header>
-        <h1 id="message">{$message.value.call(undefined, -1)}</h1>
-        <p>I'm Wooseop.</p>
-        <p>On a massive rock sailing space,</p>
-        <p>Just a guy lost in his life.</p>
-        <p>Imprisoned here; nowhere else to go.</p>
-      </header>
-
-      <ActionSection title="If you'd kindly help me leave:">
-        <ActionButton
-          label="Buy Me a Beer"
-          actions={{ opens: 'https://bmc.link/wooseop' }}
-        />
-        <ActionButton
-          label="Bitcoin"
-          actions={composite(
-            'bitcoin:',
-            'bc1qep7p2ajysefld32zct02r4m60fr7l8c44k905p'
-          )}
-        />
-        <ActionButton
-          label="Monero"
-          actions={composite(
-            'monero:',
-            '43FiDNzMdS8ZwiadZG1LtggCLKfErHEdPRs6X3Z1fu8qQB72WtDmAFiQsWLqA5tXtBQL39AEWpjC4SejsKEpdPo7F2gZCMT'
-          )}
-        />
-        <ActionButton
-          label="Toss"
-          actions={{ opens: 'https://toss.me/wooseop' }}
-        />
-      </ActionSection>
-      <ActionSection title="If you know how to leave:">
-        <ActionButton
-          label="Email"
-          actions={composite('mailto:', 'wooseop@protonmail.com')}
-        />
-      </ActionSection>
-      <ActionSection title="If you want to see my struggles:">
-        <ActionButton
-          label="GitHub"
-          actions={{ opens: 'https://github.com/wooseopkim' }}
-        />
-        <ActionButton
-          label="Blog"
-          actions={{ opens: 'https://blog.wooseop.kim' }}
-        />
-      </ActionSection>
-    </main>
-    <aside>
-      <h2>Painkillers, <wbr />none of which worked:</h2>
-
-      <SourcedQuote by="Theodore Sturgeon">
-        Ninety percent of <em>everything</em> is crud.
-      </SourcedQuote>
-      <SourcedQuote by="Murphy's law">
-        Anything that can go wrong will go wrong.
-      </SourcedQuote>
-      <SourcedQuote by="Brandon Carter">
-        Our location in the universe is necessarily privileged to the extent of
-        being compatible with our existence as observers.
-      </SourcedQuote>
-      <SourcedQuote by="Baruch Spinoza">
-        I have striven not to laugh at human actions, not to weep at them, nor
-        to hate them, but to understand them.
-      </SourcedQuote>
-      <SourcedQuote by="William Gibson">
-        The future is already here — it's just not evenly distributed.
-      </SourcedQuote>
-      <SourcedQuote by="Melvin Conway">
-        Any organization that designs a system will produce a design whose
-        structure is a copy of the organization's communication structure.
-      </SourcedQuote>
-      <SourcedQuote by="Antoine de Saint-Exupéry">
-        Perfection is achieved, not when there is nothing more to add, but when
-        there is nothing left to take away.
-      </SourcedQuote>
-      <SourcedQuote by="The Restaurant at the End of the Universe">
-        In the beginning the Universe was created. This had made many people
-        very angry and has been widely regarded as a bad move.
-      </SourcedQuote>
-      <SourcedQuote by="Grace Hopper">
-        The most dangerous phrase in the language is, 'We've always done it this
-        way.'
-      </SourcedQuote>
-      <SourcedQuote by="Laurence J. Peter">
-        In a hierarchy, every employee tends to rise to his level of
-        incompetence.
-      </SourcedQuote>
-      <SourcedQuote by="Robert A. Heinlein">
-        Never underestimate the power of human stupidity.
-      </SourcedQuote>
-      <InfiniteClone>
-        <SourcedQuote by="Albert Einstein">
-          Insanity is repeating the same mistakes and expecting different
-          results.
-        </SourcedQuote>
-      </InfiniteClone>
-
-      <p>So that's why.</p>
-    </aside>
-  </div>
-</Layout>
-
-<style>
-  .container {
-    margin: auto;
-    width: 80%;
-    height: 100%;
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: center;
-    align-items: center;
-    --padding-between: 8vw;
-
-    @media (max-width: 1080px) {
-      display: block;
-      --padding-between: 0;
-    }
-  }
-
-  .container > * {
-    overflow-y: scroll;
-    height: 100vh;
-    padding-block-start: var(--padding-vertical);
-    padding-block-end: var(--padding-vertical);
-
-    @media (max-width: 1080px) {
-      overflow-y: visible;
-      height: initial;
-    }
-  }
-
-  main {
-    padding-inline-start: var(--padding-between);
-    direction: rtl;
-    --padding-vertical: 2rem;
-
-    & :global(*) {
-      direction: initial;
-    }
-  }
-
-  :global(h1) {
-    font-size: 3rem;
-  }
-
-  :global(h2) {
-    font-size: 1.2rem;
-  }
-
-  aside {
-    display: flex;
-    flex-direction: column;
-    padding-inline-end: var(--padding-between);
-    --padding-vertical: 5rem;
-
-    @media (max-width: 1080px) {
-      padding-block-start: calc(var(--padding-vertical) / 4);
-      gap: 1rem;
-    }
-
-    & h2 {
-      margin-block-end: 2rem;
-    }
-  }
-</style>

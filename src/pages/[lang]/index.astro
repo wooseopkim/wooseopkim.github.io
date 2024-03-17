@@ -1,0 +1,222 @@
+---
+import { composite } from '@lib/Action';
+import ActionButton from '@components/ActionButton.astro';
+import ActionSection from '@components/ActionSection.astro';
+import SourcedQuote from '@components/SourcedQuote.astro';
+import Layout from '@layouts/Layout.astro';
+import InfiniteClone from '@components/InfiniteClone.astro';
+import TranslatedText from '@components/TranslatedText.astro';
+import t, { localeNames, type LocaleName } from '@lib/i18n';
+import { getCollection } from 'astro:content';
+
+export function getStaticPaths() {
+  return [...localeNames].map((x) => ({
+    params: { lang: x },
+  }));
+}
+
+const { lang } = Astro.params;
+const locale = lang as LocaleName;
+
+const message = t('hi', locale);
+
+const quotes = await Promise.all(
+  (
+    await getCollection('quotes')
+  )
+    .filter((x) => x.id.startsWith(`${lang ?? ''}/`))
+    .sort((a, b) => a.data.order - b.data.order)
+    .map(async (x) => [x, await x.render()] as const)
+);
+---
+
+<script>
+  import $interactions from '@store/$interactions';
+  import t, { type LocaleName } from '@lib/i18n';
+  const [_, lang] = location.pathname.split('/');
+  const locale = lang as LocaleName;
+
+  const message = document.getElementById('message')!;
+
+  const interactive = document.querySelectorAll('action-button');
+  interactive.forEach((button) => {
+    button.querySelectorAll('a, input, button').forEach((action) => {
+      action.addEventListener('click', () => {
+        $interactions.update((value) => value.add(button));
+      });
+    });
+  });
+
+  $interactions.subscribe((interactions) => {
+    message.textContent = (() => {
+      if (interactions.size === 0) {
+        return t('hi', locale);
+      }
+
+      if (interactions.size === interactive.length) {
+        return t('thanksALot', locale);
+      }
+
+      return t('thanks', locale);
+    })();
+  });
+</script>
+
+<Layout>
+  <div class="container">
+    <main>
+      <header>
+        <h1 id="message">{message}</h1>
+        <TranslatedText of="bio" {locale}>
+          {
+            (s: string) => (
+              <>
+                {s.split('\n').map((x) => (
+                  <p>{x}</p>
+                ))}
+              </>
+            )
+          }
+        </TranslatedText>
+      </header>
+
+      <ActionSection title={t('sponsor', locale)}>
+        <ActionButton
+          label={t('buyMeABeer', locale)}
+          actions={{ opens: 'https://bmc.link/wooseop' }}
+        />
+        <ActionButton
+          label={t('bitcoin', locale)}
+          actions={composite(
+            'bitcoin:',
+            'bc1qep7p2ajysefld32zct02r4m60fr7l8c44k905p'
+          )}
+        />
+        <ActionButton
+          label={t('monero', locale)}
+          actions={composite(
+            'monero:',
+            '43FiDNzMdS8ZwiadZG1LtggCLKfErHEdPRs6X3Z1fu8qQB72WtDmAFiQsWLqA5tXtBQL39AEWpjC4SejsKEpdPo7F2gZCMT'
+          )}
+        />
+        <ActionButton
+          label={t('toss', locale)}
+          actions={{ opens: 'https://toss.me/wooseop' }}
+        />
+      </ActionSection>
+      <ActionSection title={t('contacts', locale)}>
+        <ActionButton
+          label={t('email', locale)}
+          actions={composite('mailto:', 'wooseop@protonmail.com')}
+        />
+      </ActionSection>
+      <ActionSection title={t('links', locale)}>
+        <ActionButton
+          label={t('gitHub', locale)}
+          actions={{ opens: 'https://github.com/wooseopkim' }}
+        />
+        <ActionButton
+          label={t('blog', locale)}
+          actions={{ opens: 'https://blog.wooseop.kim' }}
+        />
+      </ActionSection>
+    </main>
+    <aside>
+      <h2><TranslatedText of="quotes" {locale} /></h2>
+
+      {
+        quotes.map(([x, { Content }], i, xs) => {
+          const last = i === xs.length - 1;
+          const quote = (
+            <SourcedQuote by={x.data.source}>
+              <Content />
+            </SourcedQuote>
+          );
+          return last ? <InfiniteClone>{quote}</InfiniteClone> : quote;
+        })
+      }
+
+      <p><TranslatedText of="finding" {locale} /></p>
+    </aside>
+  </div>
+</Layout>
+
+<style>
+  .container {
+    margin: auto;
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    --padding-between: 6vw;
+
+    @media (max-width: 1080px) {
+      display: block;
+      --padding-between: 0;
+    }
+  }
+
+  .container > * {
+    overflow-y: scroll;
+    height: 100vh;
+    padding-block-start: var(--padding-vertical);
+    padding-block-end: var(--padding-vertical);
+    width: 30rem;
+
+    @media (max-width: 1080px) {
+      width: revert;
+      overflow-y: visible;
+      height: initial;
+      max-width: 20rem;
+      margin: auto;
+    }
+  }
+
+  main {
+    padding-inline-start: var(--padding-between);
+    direction: rtl;
+    --padding-vertical: 3rem;
+
+    & :global(*) {
+      direction: initial;
+    }
+  }
+
+  :global(h1) {
+    font-size: 3rem;
+  }
+
+  :global(h2) {
+    font-size: 1.2rem;
+  }
+
+  aside {
+    display: flex;
+    flex-direction: column;
+    padding-inline-end: var(--padding-between);
+    --padding-vertical: 5rem;
+
+    @media (max-width: 1080px) {
+      padding-block-start: calc(var(--padding-vertical) / 4);
+      gap: 1rem;
+    }
+
+    & h2 {
+      margin-block-end: 2rem;
+    }
+
+    & h2 ~ :global(*) {
+      margin-block-start: 2rem;
+
+      &:first-of-type {
+        margin-block-start: 1rem;
+      }
+    }
+
+    & p:last-child {
+      margin-block-start: 3rem;
+    }
+  }
+</style>
