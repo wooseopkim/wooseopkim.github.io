@@ -11,7 +11,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check && tsc --noEmit",
-    "check:ts": "astro check",
+    "check:ts": "tsc --noEmit",
     "check:astro": "astro check",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write . && eslint . --fix"
