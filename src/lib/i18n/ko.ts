@@ -17,7 +17,6 @@ const ko: Text = {
   buyMeABeer: '바이 미 어 비어',
   bitcoin: '비트코인',
   monero: '모네로',
-  toss: '토스',
   email: '이메일',
   gitHub: '깃헙',
   blog: '블로그',

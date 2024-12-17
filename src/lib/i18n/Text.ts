@@ -10,7 +10,6 @@ export interface Text {
   buyMeABeer: string;
   bitcoin: string;
   monero: string;
-  toss: string;
   email: string;
   gitHub: string;
   blog: string;

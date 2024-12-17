@@ -17,7 +17,6 @@ const en: Text = {
   buyMeABeer: 'Buy Me a Beer',
   bitcoin: 'Bitcoin',
   monero: 'Monero',
-  toss: 'Toss',
   email: 'Email',
   gitHub: 'GitHub',
   blog: 'Blog',
