@@ -86,7 +86,7 @@ const value = actions.contains;
     <a {href} {target} referrerpolicy="same-origin">{label}</a>
     {
       value !== undefined && (
-        <>
+        <Fragment>
           <input
             readonly
             {value}
@@ -94,7 +94,7 @@ const value = actions.contains;
             aria-label={label}
           />
           <button data-copy={value}>Copy</button>
-        </>
+        </Fragment>
       )
     }
   </label>

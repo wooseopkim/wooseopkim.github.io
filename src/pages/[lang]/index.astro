@@ -70,11 +70,11 @@ const quotes = await Promise.all(
         <TranslatedText of="bio" {locale}>
           {
             (s: string) => (
-              <>
+              <Fragment>
                 {s.split('\n').map((x) => (
                   <p>{x}</p>
                 ))}
-              </>
+              </Fragment>
             )
           }
         </TranslatedText>
