@@ -16,7 +16,7 @@
     "format": "prettier --write . && eslint . --fix"
   },
   "dependencies": {
-    "astro": "^2.4.1",
+    "astro": "^4.16.18",
     "posthog-js": "^1.63.2"
   },
   "devDependencies": {
