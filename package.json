@@ -45,5 +45,8 @@
     "**/*.{js,jsx,ts,tsx,astro}": [
       "npm run lint"
     ]
+  },
+  "volta": {
+    "node": "22.12.0"
   }
 }
